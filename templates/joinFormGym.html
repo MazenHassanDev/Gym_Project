@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Join Form</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Pick Your Gym</h1>
+    <form method="POST" action="{{ url_for('join_gym') }}">
+        <button type="submit" name="gym" value="ugym">UGYM</button>
+        <button type="submit" name="gym" value="powerzone">POWERZONE</button>
+    </form>
+
+    <div id="ugym-div">
+        <h3>UGYM</h3>
+        <form method="POST" action="{{ url_for('join_member') }}">
+            <input type="hidden" name="gym" value="ugym">
+
+
+            <h3>Options:</h3><br>
+
+            <label>
+                <input type="radio" value="GYM_OFFPEAK" name="options" required>
+                Gym Off-Peak
+            </label><br>
+
+            <label>
+                <input type="radio" value="GYM_ANYTIME" name="options">
+                Gym Anytime
+            </label><br>
+
+
+            <label>
+                <input type="radio" value="MASSAGE" name="options">
+                Massage
+            </label><br>
+
+
+            <label>
+                <input type="radio" value="PHYSIO" name="options">
+                Physiotherapy
+            </label><br>
+
+            <button type="submit">Continue</button>
+        </form>
+    </div>
+
+    <div id="powerzone-id">
+        <h3>POWERZONE</h3>
+        <form method="POST" action="{{ url_for('join_member') }}">
+            <input type="hidden" name="gym" value="powerzone">
+
+            <h3>Options:</h3><br>
+
+            <label>
+                <input type="radio" value="GYM_OFFPEAK" name="options" required>
+                Gym Off-Peak
+            </label><br>
+
+            <label>
+                <input type="radio" value="GYM_ANYTIME" name="options">
+                Gym Anytime
+            </label><br>
+
+
+            <label>
+                <input type="radio" value="MASSAGE" name="options">
+                Massage
+            </label><br>
+
+
+            <label>
+                <input type="radio" value="PHYSIO" name="options">
+                Physiotherapy
+            </label><br>
+
+            <button type="submit">Continue</button>
+        </form>
+    </div>
+</body>
+</html>
