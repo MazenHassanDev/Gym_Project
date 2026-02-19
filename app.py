@@ -57,42 +57,22 @@ def root():  # put application's code here
 def home():
     return render_template("home.html")
 
-@app.route('/join_gym_form', methods=["GET", "POST"])
-def join_gym():
-    if request.method == "POST":
-        selected_gym = request.form.get("gym")
-        selected_option = request.form.get("options")
+@app.route('/ugym')
+def ugym():
+    return render_template('ugym.html')
 
-        if not selected_gym or not selected_option:
-            flash("Please select an option before continuing")
-            return redirect(url_for("join_gym"))
+@app.route('/powerzone')
+def powerzone():
+    return render_template('powerzone.html')
 
-        return redirect(url_for("join_member", gym=selected_gym, options=selected_option))
+@app.route('/join_now')
+def join_now():
+    return render_template('join_now.html')
 
-    return render_template("joinFormGym.html")
-
-@app.route('/join_member_form', methods=["GET", "POST"])
-def join_member():
-    selected_gym = request.args.get("gym")
-    selected_option = request.args.get("options")
-
-    if not selected_gym or not selected_option:
-        return redirect(url_for("join_gym"))
-
-    if selected_gym == "ugym" and selected_option:
-        return render_template('joinFormMemberUGYM.html', gym=selected_gym, options=selected_option)
-    elif selected_gym == "powerzone" and selected_option:
-        return render_template('joinFormMemberPOWER.html', gym=selected_gym, options=selected_option)
-    else:
-        return redirect(url_for("join_gym"))
-
-
-
-
-@app.route('/form_result')
-def form_result():
-    return render_template("formResult.html")
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
