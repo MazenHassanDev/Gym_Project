@@ -65,6 +65,10 @@ def ugym():
 def powerzone():
     return render_template('powerzone.html')
 
+@app.route('/compare')
+def compare():
+    return render_template('comparePage.html')
+
 @app.route('/join_now')
 def join_now():
     return render_template('join_now.html')
