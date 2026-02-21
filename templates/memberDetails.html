@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+   <div id="memberDiv">
+        <h1>Your Details</h1>
+        <!-- FIX: member is now a dict (dictionary=True cursor), so access by key name -->
+        <table>
+            <tr><th>Membership ID</th><td>{{ member['membership_id'] }}</td></tr>
+            <tr><th>First Name</th><td>{{ member['first_name'] }}</td></tr>
+            <tr><th>Last Name</th><td>{{ member['last_name'] }}</td></tr>
+            <tr><th>Date of Birth</th><td>{{ member['dob'] }}</td></tr>
+            <tr><th>Gym</th><td>{{ member['gym_name'] }}</td></tr>
+            <tr><th>Access Type</th><td>{{ member['gym_access'] }}</td></tr>
+            <tr><th>Student Discount</th><td>{{ 'Yes' if member['is_student'] else 'No' }}</td></tr>
+            <tr><th>Pensioner Discount</th><td>{{ 'Yes' if member['is_pensioner'] else 'No' }}</td></tr>
+            <tr><th>Monthly Total</th><td>£{{ "%.2f"|format(member['total_monthly']) }}</td></tr>
+            <tr><th>Due Now</th><td>£{{ "%.2f"|format(member['total_due_now']) }}</td></tr>
+        </table>
+    </div>
+
+{% endblock %}

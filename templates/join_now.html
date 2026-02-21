@@ -1,4 +1,45 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h1>CHOOSE YOUR GYM</h1>
+    <div id="joinSection">
+        <h1>JOIN OUR GYMS</h1>
+        <div id="formDiv">
+            <form action="{{ url_for('join_now') }}" method="post" id="joinForm">
+
+                <label for="gym">Choose a gym:</label>
+                <select id="gym" name="gym" required>
+                    <option value="" selected disabled>--Please Select--</option>
+                    <option value="UGYM">UGym</option>
+                    <option value="PowerZone">PowerZone</option>
+                </select><br>
+
+                <label for="access">Membership Option:</label>
+                <select id="access" name="access" required>
+                    <option value="" selected disabled>--Please Select--</option>
+                    <option value="off-peak">Off-Peak</option>
+                    <option value="anytime">Anytime</option>
+                    <option value="massage">Massage</option>
+                    <option value="physio">Physiotherapy</option>
+                </select><br>
+
+                <label for="first_name">First Name:</label>
+                <input type="text" id="first_name" name="first_name" required minlength="2" maxlength="80"><br>
+
+                <label for="last_name">Last Name:</label>
+                <input type="text" id="last_name" name="last_name" required minlength="2" maxlength="80"><br>
+
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob" required><br>
+
+
+                <label for="typeOf">Select:</label><br>
+                <input type="radio" id="isStudent" name="typeOf" value="student">
+                <label for="isStudent">Student</label>
+                <input type="radio" id="isPensioner" name="typeOf" value="pensioner">
+                <label for="isPensioner">Pensioner</label><br>
+
+
+                <input type="submit" value="Join Now">
+            </form>
+        </div>
+    </div>
 {% endblock %}
