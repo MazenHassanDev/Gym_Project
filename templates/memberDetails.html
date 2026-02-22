@@ -2,7 +2,6 @@
 {% block content %}
    <div id="memberDiv">
         <h1>Your Details</h1>
-        <!-- FIX: member is now a dict (dictionary=True cursor), so access by key name -->
         <table>
             <tr><th>Membership ID</th><td>{{ member['membership_id'] }}</td></tr>
             <tr><th>First Name</th><td>{{ member['first_name'] }}</td></tr>

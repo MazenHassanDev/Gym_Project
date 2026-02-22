@@ -30,3 +30,7 @@ body{
     margin-top: 12px;
     background: #fff;
 }
+
+#adminDiv{
+    justify-items: center;
+}

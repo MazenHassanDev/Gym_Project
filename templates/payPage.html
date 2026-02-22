@@ -2,7 +2,7 @@
 {% block content %}
     <div id="loginDiv">
         <h1>Pay Now</h1>
-        <h3>Total:</h3>
+        <h3>Total: {{ total }}</h3>
         <form action="{{ url_for('pay_now') }}" method="post">
             <input type="submit" value="Pay">
         </form>
