@@ -1,0 +1,18 @@
+{# ===========================================================================#}
+{# USER PAY PAGE HTML (POST)#}
+{# ===========================================================================#}
+
+{% extends 'base.html' %}
+
+{% block title %}Pay Now{% endblock %}
+
+{% block content %}
+    <div id="loginDiv">
+        <h1>Pay Now</h1>
+        <h3>Total: {{ total }}</h3>
+        <form action="{{ url_for('pay_now') }}" method="post">
+            <input type="submit" value="Pay">
+        </form>
+    </div>
+
+{% endblock %}

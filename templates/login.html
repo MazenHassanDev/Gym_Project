@@ -1,4 +1,32 @@
+{# ===========================================================================#}
+{# USER LOGIN PAGE HTML (POST)#}
+{# ===========================================================================#}
+
 {% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
 {% block content %}
-    <h1>Login Page</h1>
+    <div id="loginDiv">
+        <h1>Login Page</h1>
+
+        {% if new_member_id %}
+            <div>
+                <p>Payment Successful!</p><br>
+                <p>You membership ID is {{ new_member_id }}</p>
+                <p>Please save this to log in.</p>
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <p>{{ error }}</p>
+        {% endif %}
+
+        <form action="{{ url_for('login') }}" method="post">
+            <label for="memberID">Member ID:</label>
+            <input type="text" id="memberID" name="memberID" minlength="2" maxlength="30" placeholder="e.g. GYM-XXXX" required><br>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+
 {% endblock %}

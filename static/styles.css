@@ -2,3 +2,35 @@ body{
     font-family: Verdana;
     font-size: 1.5em;
 }
+.compare-table th,
+.compare-table td {
+    border: 2px solid #111;
+    padding: 12px 14px;
+    text-align: left;
+    vertical-align: middle;
+}
+/* Wrapper for both gym tables */
+.compare-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* Each table container */
+#ugym-table,
+#powerzone-table {
+    flex: 1;
+}
+
+/* Make tables fit side-by-side properly */
+.compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    background: #fff;
+}
+
+#adminDiv{
+    justify-items: center;
+}
