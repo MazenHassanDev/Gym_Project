@@ -1,0 +1,66 @@
+{# ===========================================================================#}
+{# ADMIN VIEW SUBMISSIONS PAGE HTML (GET)#}
+{# ===========================================================================#}
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div id="adminDiv">
+        <h1>Admin Home</h1>
+        <form action {{ url_for('admin_submissions') }} method="get">
+            <input type="text" name="q" placeholder="Search by name" value="{{ request.args.get('q','') }}">
+            <button type="submit">Search</button>
+
+            {% if request.args.get('q') %}
+                <a href="{{ url_for('admin_submissions') }}">Clear</a>
+            {% endif %}
+        </form>
+
+        {% if members %}
+            <table border="1" cellpadding="12">
+                <thead>
+                    <tr>
+                        <th>Membership ID</th>
+                        <th>Gym</th>
+                        <th>Gym Access</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Date of Birth</th>
+                        <th>Student</th>
+                        <th>Pensioner</th>
+                        <th>Total Monthly</th>
+                        <th>Total Due Now</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in members %}
+                        <tr>
+                            <td>{{ m.membership_id }}</td>
+                            <td>{{ m.gym_name }}</td>
+                            <td>{{ m.gym_access }}</td>
+                            <td>{{ m.first_name }}</td>
+                            <td>{{ m.last_name }}</td>
+                            <td>{{ m.dob }}</td>
+                            <td>{{ m.is_student }}</td>
+                            <td>{{ m.is_pensioner }}</td>
+                            <td>{{ m.total_monthly }}</td>
+                            <td>{{ m.total_due_now }}</td>
+                            <td>
+                                <a href="{{ url_for('admin_edit', submission_id=m.membership_id) }}">Edit</a>
+                                <form method="post"
+                                      action="{{ url_for('admin_delete', submission_id=m.membership_id) }}"
+                                      onsubmit="return confirm('Delete this record?');">
+                                <button type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No submissions yet.</p>
+        {% endif %}
+    </div>
+{% endblock %}

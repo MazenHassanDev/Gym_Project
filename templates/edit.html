@@ -1,0 +1,38 @@
+{# ===========================================================================#}
+{# ADMIN EDIT SUBMISSION PAGE HTML (POST)#}
+{# ===========================================================================#}
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div id="adminDiv">
+        <h1>Edit Member</h1>
+
+        <form action="{{ url_for('admin_edit', submission_id=members.membership_id) }}" method="post">
+            <label>First Name:</label><br>
+            <input type="text" name="first_name" value="{{ members.first_name }}" required><br>
+
+            <label>Last Name:</label><br>
+            <input type="text" name="last_name" value="{{ members.last_name }}" required><br>
+
+            <label>Gym:</label>
+            <select name="gym_name">
+                <option value="UGYM" {{ 'selected' if members.gym_name == 'UGYM' }}>UGym</option>
+                <option value="PowerZone" {{ 'selected' if members.gym_name == 'PowerZone' }}>PowerZone</option>
+            </select><br>
+
+            <label>Access Type:</label>
+            <select name="gym_access">
+                <option value="off-peak" {{ 'selected' if members.gym_access == 'off-peak' }}>Off-Peak</option>
+                <option value="anytime" {{ 'selected' if members.gym_access == 'anytime' }}>Anytime</option>
+                <option value="massage" {{ 'selected' if members.gym_access == 'massage' }}>Massage</option>
+                <option value="physio" {{ 'selected' if members.gym_access == 'physio' }}>Physiotherapy</option>
+            </select>
+
+            <input type="submit" value="Save Changes">
+            <a href="{{ url_for('admin_submissions') }}">Cancel</a>
+        </form>
+    </div>
+
+{% endblock %}

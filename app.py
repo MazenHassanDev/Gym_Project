@@ -40,10 +40,6 @@ def get_db():
         database=os.getenv('DB_NAME')
     )
 
-@app.route('/admin_login')
-def admin_login():
-    return render_template('adminPage.html')
-
 @app.route('/db-test')
 def db_test():
     conn = get_db()
@@ -55,8 +51,115 @@ def db_test():
     cursor.close()
     conn.close()
 
-    return f"Database connected. membership_options rows : {result}"
+# ===========================================================================
+# ADMIN ROUTES
+# ===========================================================================
+@app.route('/admin_login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        input_username = request.form.get('username', '').strip()
+        input_password = request.form.get('password', '').strip()
 
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute('SELECT user_name, password FROM admin_info WHERE user_name = %s LIMIT 1', (input_username,))
+        admin = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if admin and admin['password'] == input_password:
+            session['admin_logged_in'] = True
+            return redirect(url_for('admin_submissions'))
+
+        return render_template('adminLogin.html', error="Please enter valid credentials")
+
+    return render_template('adminLogin.html')
+
+@app.route('/admin_submissions', methods=['GET'])
+def admin_submissions():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+
+    q = request.args.get('q', '').strip()
+
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    if q:
+        cursor.execute("""
+            SELECT * FROM memberships WHERE first_name LIKE %s OR last_name LIKE %s
+        """, (f"%{q}%", f"%{q}%"))
+    else:
+        cursor.execute("SELECT * FROM memberships")
+
+    members = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('submissions.html', members=members)
+
+@app.route('/admin_edit/<string:submission_id>', methods=['GET', 'POST'])
+def admin_edit(submission_id):
+
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM memberships WHERE membership_id = %s", (submission_id,))
+
+    members = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if not members:
+        return render_template('edit.html', error="Record not found")
+
+    if request.method == 'POST':
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        gym_name = request.form.get('gym_name')
+        gym_access = request.form.get('gym_access')
+
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE memberships SET first_name = %s, last_name = %s, gym_name = %s , gym_access = %s WHERE membership_id = %s
+        """, (first_name, last_name, gym_name, gym_access ,submission_id))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for('admin_submissions'))
+
+    return render_template('edit.html', members=members)
+
+@app.route('/admin_delete/<string:submission_id>', methods=['GET', 'POST'])
+def admin_delete(submission_id):
+
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM memberships WHERE membership_id = %s", (submission_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect(url_for('admin_submissions'))
+
+@app.route('/admin_logout')
+def admin_logout():
+    session.pop('admin_logged_in', None)
+    return redirect(url_for('admin_login'))
+
+
+# ===========================================================================
+# FUNCTION: Monthly fee calculation
+# ===========================================================================
 def calculate_monthly_total(gym_name, gym_access, is_student, is_pensioner):
     access_map = {
         'off-peak' : 'GYM_OFFPEAK',
@@ -96,6 +199,9 @@ def calculate_monthly_total(gym_name, gym_access, is_student, is_pensioner):
 
     return round(total, 2)
 
+# ===========================================================================
+# MAIN ROUTES
+# ===========================================================================
 @app.route('/')
 def root():  # put application's code here
     return redirect(url_for("home"))
@@ -103,6 +209,10 @@ def root():  # put application's code here
 @app.route('/home')
 def home():
     return render_template("home.html")
+
+
+# GYM ROUTES
+# ===========================================================================
 
 @app.route('/ugym')
 def ugym():
@@ -115,6 +225,10 @@ def powerzone():
 @app.route('/compare')
 def compare():
     return render_template('comparePage.html')
+
+
+# ACTION ROUTES
+# ===========================================================================
 
 @app.route('/join_now', methods=['GET','POST'])
 def join_now():
@@ -226,7 +340,8 @@ def pay_now():
         return render_template('payPage.html', total=total)
 
 
-
+# USER AUTHENTICATION ROUTES
+# ===========================================================================
 @app.route('/login', methods=['GET','POST'])
 def login():
 
@@ -279,5 +394,7 @@ def logout():
     session.clear()
     return redirect(url_for("login"))
 
+# RUN MAIN ONLY
+# ===========================================================================
 if __name__ == '__main__':
     app.run(debug=True)
