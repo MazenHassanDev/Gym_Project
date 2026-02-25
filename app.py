@@ -285,6 +285,8 @@ def join_now():
 @app.route('/pay_now', methods=['GET','POST'])
 def pay_now():
 
+    paidStatus = False
+
     def generate_unique_member_id(conn):
         cursor = conn.cursor()
         while True:
@@ -299,7 +301,7 @@ def pay_now():
         if "pending_member_id" not in session:
             return "No pending membership found. Please Join Now.", 400
 
-        pending_member_id = session["pending_member_id"]
+        pending_member_id = session.get('pending_member_id')
 
         conn = get_db()
         cursor = conn.cursor()
@@ -314,9 +316,9 @@ def pay_now():
 
         cursor.execute("""
             UPDATE memberships
-            SET membership_id = %s, total_monthly = %s, total_due_now = %s
+            SET membership_id = %s, total_monthly = %s, total_due_now = 0
             WHERE id = %s
-        """, (member_id, total, total, pending_member_id))
+        """, (member_id, total, pending_member_id))
 
         conn.commit()
         cursor.close()
@@ -336,6 +338,9 @@ def pay_now():
         conn.close()
 
         total = calculate_monthly_total(row[0], row[1], row[2], row[3])
+        
+
+
 
         return render_template('payPage.html', total=total)
 
