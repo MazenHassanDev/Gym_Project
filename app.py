@@ -459,7 +459,7 @@ def member_details():
     sessiondb = SessionDB()
     try:
         
-        member = sessiondb.query(Memberships).filter_by(memberships.membership_id == session['logged_in_member_id']).first()
+        member = sessiondb.query(Memberships).filter_by(Memberships.membership_id == session['logged_in_member_id']).first()
 
         addons_list = member.gym_addons.split(',') if member.gym_addons else None
 
