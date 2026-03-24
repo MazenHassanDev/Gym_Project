@@ -6,5 +6,20 @@
 {% block title %}Home{% endblock title %}
 
 {% block content %}
-    <h1>Welcome to Home Page</h1>
+<div id="homeSection">
+    <h1>Welcome to Our Gyms</h1>
+    <p class="motto">"Train smarter. Get stronger. Stay consistent."</p>
+
+    <p class="home-desc">
+        Whether you're just starting out or pushing your limits, we offer the perfect environment
+        to help you achieve your fitness goals. Explore our gyms, compare memberships, and join today.
+    </p>
+
+    <div id="gymLinks">
+        <a href="{{ url_for('ugym') }}" class="gymCard">UGym</a>
+        <a href="{{ url_for('powerzone') }}" class="gymCard">PowerZone</a>
+        <a href="{{ url_for('compare') }}" class="gymCard">Compare Prices</a>
+        <a href="{{ url_for('join_now') }}" class="gymCard joinNow">Join Now</a>
+    </div>
+</div>
 {% endblock %}

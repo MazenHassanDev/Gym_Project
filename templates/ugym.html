@@ -6,7 +6,38 @@
 
 {% block title %}UGym{% endblock %}
 
-
 {% block content %}
-    <h1> UGYM TOUR PAGE</h1>
+<div class="gym-section" id="ugymSection">
+    <h1>UGym</h1>
+    <p class="gym-subtext">
+        Affordable memberships, flexible hours, and quality equipment.
+    </p>
+
+    <div class="gym-cards">
+        <div class="card">
+            <h2>Off-Peak Access</h2>
+            <p>Work out during quieter hours to avoid crowds.</p>
+        </div>
+
+        <div class="card">
+            <h2>Anytime Access</h2>
+            <p>Full access to all facilities at any time.</p>
+        </div>
+
+        <div class="card">
+            <h2>Massage Services</h2>
+            <p>Relaxing massages included with membership.</p>
+        </div>
+
+        <div class="card">
+            <h2>Physiotherapy</h2>
+            <p>Professional physiotherapy sessions to recover faster.</p>
+        </div>
+
+        <div class="card joinCard">
+            <h2>Ready to Start?</h2>
+            <a href="{{ url_for('join_now') }}">Join Now</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

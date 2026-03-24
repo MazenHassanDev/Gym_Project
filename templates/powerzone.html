@@ -7,5 +7,32 @@
 {% block title %}PowerZone{% endblock %}
 
 {% block content %}
-    <h1> POWERZONE TOUR PAGE</h1>
+<div id="powerzoneSection" class="gym-section">
+    <h1>PowerZone</h1>
+    <p class="gym-subtext">
+        Premium facilities designed for performance, recovery, and results.
+    </p>
+
+    <div id="powerzoneCards" class="gym-cards">
+        <div class="card">
+            <h2>Gym Access</h2>
+            <p>Train anytime with high-quality equipment and a spacious environment.</p>
+        </div>
+
+        <div class="card">
+            <h2>Massage Services</h2>
+            <p>Reduce muscle tension and recover faster with expert massage therapy.</p>
+        </div>
+
+        <div class="card">
+            <h2>Physiotherapy</h2>
+            <p>Professional support to improve mobility and prevent injuries.</p>
+        </div>
+
+        <div class="card joinCard">
+            <h2>Ready to Start?</h2>
+            <a href="{{ url_for('join_now') }}">Join Now</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

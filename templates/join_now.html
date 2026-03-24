@@ -38,11 +38,17 @@
                 <input type="date" id="dob" name="dob" required><br>
 
 
-                <label for="typeOf">Select:</label><br>
-                <input type="radio" id="isStudent" name="typeOf" value="student">
-                <label for="isStudent">Student</label>
-                <input type="radio" id="isPensioner" name="typeOf" value="pensioner">
-                <label for="isPensioner">Pensioner</label><br>
+                <label for="typeOf">Select:</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="typeOf" value="student">
+                        Student
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="typeOf" value="pensioner">
+                        Pensioner
+                    </label>
+                </div>
 
 
                 <input type="submit" value="Join Now">
