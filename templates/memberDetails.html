@@ -21,6 +21,7 @@
             <tr><th>Monthly Total</th><td>£{{ "%.2f"|format(member['total_monthly']) }}</td></tr>
             <tr><th>Due Now</th><td>£{{ "%.2f"|format(member['total_due_now']) }}</td></tr>
         </table>
+        <a href="{{ url_for('logout') }}" class="member-logout">Logout</a>
     </div>
 
 {% endblock %}
