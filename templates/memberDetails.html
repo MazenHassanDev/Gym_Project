@@ -10,18 +10,33 @@
    <div id="memberDiv">
         <h1>Your Details</h1>
         <table>
-            <tr><th>Membership ID</th><td>{{ member['membership_id'] }}</td></tr>
-            <tr><th>First Name</th><td>{{ member['first_name'] }}</td></tr>
-            <tr><th>Last Name</th><td>{{ member['last_name'] }}</td></tr>
-            <tr><th>Date of Birth</th><td>{{ member['dob'] }}</td></tr>
-            <tr><th>Gym</th><td>{{ member['gym_name'] }}</td></tr>
-            <tr><th>Access Type</th><td>{{ member['gym_access'] }}</td></tr>
-            <tr><th>Student Discount</th><td>{{ 'Yes' if member['is_student'] else 'No' }}</td></tr>
-            <tr><th>Pensioner Discount</th><td>{{ 'Yes' if member['is_pensioner'] else 'No' }}</td></tr>
-            <tr><th>Monthly Total</th><td>£{{ "%.2f"|format(member['total_monthly']) }}</td></tr>
-            <tr><th>Due Now</th><td>£{{ "%.2f"|format(member['total_due_now']) }}</td></tr>
+            <tr><th>Membership ID</th><td>{{ member.membership_id }}</td></tr>
+            <tr><th>First Name</th><td>{{ member.first_name }}</td></tr>
+            <tr><th>Last Name</th><td>{{ member.last_name }}</td></tr>
+            <tr><th>Date of Birth</th><td>{{ member.dob }}</td></tr>
+            <tr><th>Email</th><td>{{ member.email }}</td></tr>
+            <tr><th>Gym</th><td>{{ member.gym_name }}</td></tr>
+            <tr><th>Access Type</th><td>{{ member.gym_access if member.gym_access else 'N/A' }}</td></tr>
+
+            <tr>
+                <th>Add-ons</th>
+                <td>
+                    {% if addons_list %}
+                        {% for addon in addons_list %}
+                            <span class="addon-tag">{{ addon }}</span>
+                        {% endfor %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+            </tr>
+
+
+            <tr><th>Student Discount</th><td>{{ 'Yes' if member.is_student else 'No'}}</td></tr>
+            <tr><th>Pensioner Discount</th><td>{{ 'Yes' if member.is_pensioner else 'No' }}</td></tr>
+            <tr><th>Monthly Total</th><td>£{{ "%.2f"|format(member.total_monthly) }}</td></tr>
+            <tr><th>Due Now</th><td>£{{ "%.2f"|format(member.total_due_now) }}</td></tr>
         </table>
         <a href="{{ url_for('logout') }}" class="member-logout">Logout</a>
     </div>
-
 {% endblock %}

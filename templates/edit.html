@@ -9,12 +9,21 @@
     <div id="adminDiv">
         <h1>Edit Member</h1>
 
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        {% if members %}
         <form action="{{ url_for('admin_edit', submission_id=members.membership_id) }}" method="post">
+
             <label>First Name:</label><br>
             <input type="text" name="first_name" value="{{ members.first_name }}" required><br>
 
             <label>Last Name:</label><br>
             <input type="text" name="last_name" value="{{ members.last_name }}" required><br>
+
+            <label>Email:</label>
+            <input type="email" name="email" value="{{members.email}}" required><br>
 
             <label>Gym:</label>
             <select name="gym_name">
@@ -24,15 +33,38 @@
 
             <label>Access Type:</label>
             <select name="gym_access">
-                <option value="off-peak" {{ 'selected' if members.gym_access == 'off-peak' }}>Off-Peak</option>
-                <option value="anytime" {{ 'selected' if members.gym_access == 'anytime' }}>Anytime</option>
-                <option value="massage" {{ 'selected' if members.gym_access == 'massage' }}>Massage</option>
-                <option value="physio" {{ 'selected' if members.gym_access == 'physio' }}>Physiotherapy</option>
-            </select>
+                
+                <option value="SUPER_OFFPEAK" {{ 'selected' if members.gym_access == 'SUPER_OFFPEAK' }}>Super Off-Peak</option>
+
+                <option value="OFFPEAK" {{'selected' if members.gym_access == 'OFFPEAK'}}>Off-Peak</option>
+
+                <option value="ANYTIME" {{ 'selected' if members.gym_access == 'ANYTIME' }}>Anytime</option>
+            </select><br>
+
+            <label>Add-ons:</label>
+            {% set current_addons = members.gym_addons.split(',') if members.gym_addons else [] %}
+            <div class="checkbox-group">
+                <label class="radio-group">
+                    <input type="checkbox" name="gym_addons" value="SWIMMING" {{ 'checked' if 'SWIMMING' in current_addons}}>Swimming Pool
+                </label>
+
+                <label class="radio-option">
+                    <input type="checkbox" name="gym_addons" value="CLASSES" {{ 'checked' if 'CLASSES' in current_addons}}>Classes
+                </label>
+
+                <label class="radio-option">
+                    <input type="checkbox" name="gym_addons" value="MASSAGE" {{ 'checked' if 'MASSAGE' in current_addons}}>Massage
+                </label>
+
+                <label class="radio-option">
+                    <input type="checkbox" name="gym_addons" value="PHYSIO" {{ 'checked' if 'PHYSIO' in current_addons}}>Physiotherapy
+                </label>
+            </div><br>
 
             <input type="submit" value="Save Changes">
             <a href="{{ url_for('admin_submissions') }}">Cancel</a>
         </form>
+        {% endif %}
     </div>
 
 {% endblock %}

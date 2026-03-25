@@ -9,53 +9,89 @@
 {% block content %}
     <div id="joinSection">
         <h1>JOIN OUR GYMS</h1>
+        <p class="join-text">Please select at least one option from the sections below. You will pick your gym on the next page.</p>
+
         <div id="formDiv">
             <form action="{{ url_for('join_now') }}" method="post" id="joinForm">
 
-                <label for="gym">Choose a gym:</label>
-                <select id="gym" name="gym" required>
-                    <option value="" selected disabled>--Please Select--</option>
-                    <option value="UGYM">UGym</option>
-                    <option value="PowerZone">PowerZone</option>
-                </select><br>
+                <!-- SECTION 1: GYM ACCESS TIME -->
 
-                <label for="access">Membership Option:</label>
-                <select id="access" name="access" required>
-                    <option value="" selected disabled>--Please Select--</option>
-                    <option value="off-peak">Off-Peak</option>
-                    <option value="anytime">Anytime</option>
-                    <option value="massage">Massage</option>
-                    <option value="physio">Physiotherapy</option>
-                </select><br>
+                <label class="section-label">Gym Access Time:</label>
+                <div class="option-group">
+                    <label class="option-box">
+                        <input type="radio" name="gym_access" value="SUPER_OFFPEAK">
+                        <span class="option-title">Super Off-Peak</span>
+                        <span class="option-desc">10am-12pm & 2pm-4pm</span>
+                    </label>
 
-                <label for="first_name">First Name:</label>
-                <input type="text" id="first_name" name="first_name" required minlength="2" maxlength="80"><br>
+                    <label class="option-box">
+                        <input type="radio" name="gym_access" value="OFFPEAK">
+                        <span class="option-title">Off-Peak</span>
+                        <span class="option-desc">12pm-2pm & 8pm-11pm</span>
+                    </label>
 
-                <label for="last_name">Last Name:</label>
-                <input type="text" id="last_name" name="last_name" required minlength="2" maxlength="80"><br>
+                    <label class="option-box">
+                        <input type="radio" name="gym_access" value="ANYTIME">
+                        <span class="option-title">Anytime</span>
+                        <span class="option-desc">Full access at any time</span>
+                    </label>
+                </div>
 
-                <label for="dob">Date of Birth:</label>
-                <input type="date" id="dob" name="dob" required><br>
+                <!-- SECTION 2: FITNESS ACTIVITIES (ADD-ONS) -->
 
+                <label class="section-label">Fitness Activities:</label>
+                <div class="option-group">
+                    <label class="option-box">
+                        <input type="checkbox" name="gym_addons" value="SWIMMING">
+                        <span class="option-title">Swimming</span>
+                        <span class="option-desc">Access to swimming pool</span>
+                    </label>
+                    <label class="option-box">
+                        <input type="checkbox" name="gym_addons" value="CLASSES">
+                        <span class="option-title">Classes</span>
+                        <span class="option-desc">Access to all classes</span>
+                    </label>
+                </div>
 
-                <label for="typeOf">Select:</label>
+                <!-- SECTION 3: RECOVERY SESSIONS (ADD-ONS) -->
+
+                <label for="section-label">Recovery Sessions:</label>
+                <div class="option-group">
+                    <label class="option-box">
+                        <input type="checkbox" name="gym_addons" value="MASSAGE">
+                        <span class="option-title">Massage</span>
+                        <span class="option-desc">Massage sessions</span>
+                    </label>
+                    <label class="option-box">
+                        <input type="checkbox" name="gym_addons" value="PHYSIO">
+                        <span class="option-title">Physiotherapy</span>
+                        <span class="option-desc">Physiotherapy sessions</span>
+                    </label>
+                </div>
+
+                <!-- SECTION 4: STATUS (OPTIONAL) -->
+
+                <label class="section-label">Status:</label>
                 <div class="radio-group">
                     <label class="radio-option">
-                        <input type="radio" name="typeOf" value="student">
+                        <input type="radio" name="typeOf" value="student" required>
                         Student
                     </label>
                     <label class="radio-option">
                         <input type="radio" name="typeOf" value="pensioner">
                         Pensioner
                     </label>
+                    <label class="radio-option">
+                        <input type="radio" name="typeOf" value="other">
+                        Other
+                    </label>
                 </div>
 
-
-                <input type="submit" value="Join Now">
-
                 {% if error %}
-                    <p>{{ error }}</p>
+                    <p class="error">{{ error }}</p>
                 {% endif %}
+
+                <input type="submit" value="See Prices">
             </form>
         </div>
     </div>

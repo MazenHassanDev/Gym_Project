@@ -1,0 +1,83 @@
+{# ===========================================================================#}
+{# COMPARE & PAY NOW PAGE HTML (POST)#}
+{# ===========================================================================#}
+
+{% extends 'base.html' %}
+{% block title %}Compare & Pay Now{% endblock %}
+
+{% block content %}
+<div id="compareSection">
+    <h1>CHOOSE YOUR GYM</h1>
+    <p class="join-text">Here's what your selections cost at each gym. Pick the one that works best for you.</p>
+ 
+    <div class="compare-gyms-container">
+
+        <!-- UGYM BOX -->
+        <div class="gym-choice-box {% if cheaper_gym == 'ugym' %}cheaper{% endif %}">
+            {% if cheaper_gym == 'ugym' %}
+                <div class="best-value-icon">Best Value</div>
+            {% endif %}
+ 
+            <h2>UGym</h2>
+ 
+            <div class="price-breakdown">
+                {% for item in ugym_items %}
+                    <div class="price-row">
+                        <span>{{ item.display_name }}</span>
+                        <span>£{{ "%.2f"|format(item.price) }}</span>
+                    </div>
+                {% endfor %}
+                <div class="price-row monthly-total">
+                    <span>Monthly Total</span>
+                    <span>£{{ "%.2f"|format(ugym_monthly) }}</span>
+                </div>
+                <div class="price-row joining-fee">
+                    <span>Joining Fee</span>
+                    <span>£{{ "%.2f"|format(ugym_joining_fee) }}</span>
+                </div>
+            </div>
+ 
+            <form action="{{ url_for('pay_now') }}" method="post">
+                <input type="hidden" name="chosen_gym" value="ugym">
+                <button type="submit" class="choose-button {% if cheaper_gym == 'ugym' %}choose-button-green{% endif %}">
+                    Choose UGym
+                </button>
+            </form>
+        </div>
+ 
+        <!-- POWERZONE BOX -->
+        <div class="gym-choice-box {% if cheaper_gym == 'powerzone' %}cheaper{% endif %}">
+            {% if cheaper_gym == 'powerzone' %}
+                <div class="best-value-icon">Best Value</div>
+            {% endif %}
+ 
+            <h2>PowerZone</h2>
+ 
+            <div class="price-breakdown">
+                {% for item in powerzone_items %}
+                    <div class="price-row">
+                        <span>{{ item.display_name }}</span>
+                        <span>£{{ "%.2f"|format(item.price) }}</span>
+                    </div>
+                {% endfor %}
+                <div class="price-row monthly-total">
+                    <span>Monthly Total</span>
+                    <span>£{{ "%.2f"|format(powerzone_monthly) }}</span>
+                </div>
+                <div class="price-row joining-fee">
+                    <span>Joining Fee</span>
+                    <span>£{{ "%.2f"|format(powerzone_joining_fee) }}</span>
+                </div>
+            </div>
+ 
+            <form action="{{ url_for('pay_now') }}" method="post">
+                <input type="hidden" name="chosen_gym" value="powerzone">
+                <button type="submit" class="choose-button {% if cheaper_gym == 'powerzone' %}choose-button-green{% endif %}">
+                    Choose PowerZone
+                </button>
+            </form>
+        </div>
+ 
+    </div>
+</div>
+{% endblock %}

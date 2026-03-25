@@ -8,10 +8,10 @@
 
     <div id="adminDiv">
         <h1>Admin Home</h1>
-        <form action={{ url_for('admin_submissions') }} method="get">
+
+        <form action="{{ url_for('admin_submissions')}}" method="get">
             <input type="text" name="q" placeholder="Search by name" value="{{ request.args.get('q','') }}">
             <button type="submit">Search</button>
-
             {% if request.args.get('q') %}
                 <a href="{{ url_for('admin_submissions') }}">Clear</a>
             {% endif %}
@@ -23,14 +23,16 @@
                     <tr>
                         <th>Membership ID</th>
                         <th>Gym</th>
-                        <th>Gym Access</th>
+                        <th>Access</th>
+                        <th>Add-ons</th>
                         <th>First Name</th>
                         <th>Last Name</th>
-                        <th>Date of Birth</th>
+                        <th>DOB</th>
+                        <th>Email</th>
                         <th>Student</th>
                         <th>Pensioner</th>
                         <th>Total Monthly</th>
-                        <th>Total Due Now</th>
+                        <th>Joining Fee</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -39,14 +41,16 @@
                         <tr>
                             <td>{{ m.membership_id }}</td>
                             <td>{{ m.gym_name }}</td>
-                            <td>{{ m.gym_access }}</td>
+                            <td>{{ m.gym_access if m.gym_access else 'N/A'}}</td>
+                            <td>{{ m.gym_addons if m.gym_addons else 'N/A'}}</td>
                             <td>{{ m.first_name }}</td>
                             <td>{{ m.last_name }}</td>
                             <td>{{ m.dob }}</td>
-                            <td>{{ m.is_student }}</td>
-                            <td>{{ m.is_pensioner }}</td>
-                            <td>{{ m.total_monthly }}</td>
-                            <td>{{ m.total_due_now }}</td>
+                            <td>{{ m.email }}</td>
+                            <td>{{ 'Yes' if m.is_student else 'No' }}</td>
+                            <td>{{ 'Yes' if m.is_pensioner else 'No' }}</td>
+                            <td>£{{ "%.2f"|format(m.total_monthly) }}</td>
+                            <td>£{{ "%.2f"|format(m.total_due_now) }}</td>
                             <td>
                                 <a href="{{ url_for('admin_edit', submission_id=m.membership_id) }}">Edit</a>
                                 <form method="post"

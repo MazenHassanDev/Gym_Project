@@ -47,6 +47,7 @@ engine = create_engine(DATABASE_URL)
 
 SessionDB = sessionmaker(bind=engine)
 
+
 # ===========================================================================
 # 4) Discounts & Joining Fees
 # ===========================================================================
@@ -82,8 +83,7 @@ def generate_unique_member_id(sessiondb):
 # 6) Calculate Monthly Total
 # ===========================================================================
 
-def calculate_monthly_total(gym_name, gym_access, is_student, is_pensioner):
-    session = SessionDB()
+def calculate_total(gym_name, gym_access, gym_addons, is_student, is_pensioner, sessiondb):
 
     total = 0.00
     user_items = []
@@ -94,19 +94,19 @@ def calculate_monthly_total(gym_name, gym_access, is_student, is_pensioner):
     has_gym_access = gym_access is not None
 
     if gym_access:
-        option = session.query(MembershipOption).filter_by(gym_name=gym_name.lower(), option_code=gym_access).first()
+        option = sessiondb.query(MembershipOption).filter_by(gym_name=gym_name.lower(), option_code=gym_access).first()
 
         if option:
             price = float(option.price_without_gym)
             
             if option.discountable and discount_rate:
-                price = round(21.00 * (1 - discount_rate), 2)
+                price = round(price * (1 - discount_rate), 2)
 
             total += price
             user_items.append({'display_name': option.display_name, 'price': price})
 
     for addon_code in gym_addons:
-        option = session.query(MembershipOption).filter_by(gym_name=gym_name.lower(), option_code=addon_code).first()
+        option = sessiondb.query(MembershipOption).filter_by(gym_name=gym_name.lower(), option_code=addon_code).first()
 
         if option:
             price = float(option.price_with_gym) if has_gym_access else float(option.price_without_gym)
@@ -185,6 +185,11 @@ def admin_edit(submission_id):
             members.gym_name = request.form.get('gym_name')
             members.gym_access = request.form.get('gym_access') or None
             members.gym_addons = ','.join(request.form.getlist('gym_addons')) or None
+
+            addons_list = request.form.getlist('gym_addons')
+            new_total, _ = calculate_total(members.gym_name, members.gym_access, addons_list, members.is_student, members.is_pensioner, sessiondb)
+            members.total_monthly = new_total
+            
             sessiondb.commit()
 
             return redirect(url_for('admin_submissions'))
@@ -245,10 +250,6 @@ def ugym():
 def powerzone():
     return render_template('powerzone.html')
 
-@app.route('/compare')
-def compare():
-    return render_template('comparePage.html')
-
 
 # ACTION ROUTES
 # ===========================================================================
@@ -267,16 +268,75 @@ def join_now():
         session['join_gym_access'] = gym_access
         session['join_gym_addons'] = gym_addons
         session['join_discount'] = discount
+        
 
-        return redirect(url_for('join_details'))
+        return redirect(url_for('pay_now'))
     
     return render_template('join_now.html')
+
+@app.route('/pay_now', methods=['GET','POST'])
+def pay_now():
+
+    required_keys = ['join_gym_access', 'join_gym_addons']
+    for val in required_keys:
+        if val not in session:
+            return redirect(url_for('join_now'))
+ 
+    gym_access = session.get('join_gym_access')
+    gym_addons = session.get('join_gym_addons')
+    discount = session.get('join_discount')
+    if discount == 'student':
+        is_student = True
+    else:
+        is_student = False
+    if discount == 'pensioner':
+        is_pensioner = True
+    else:
+        is_pensioner = False
+ 
+    if request.method == 'POST':
+        chosen_gym = request.form.get('chosen_gym')
+        if not chosen_gym:
+            return redirect(url_for('pay_now'))
+ 
+        session['join_gym_name'] = chosen_gym
+        return redirect(url_for('join_details'))
+ 
+    sessiondb = SessionDB()
+    try:
+        ugym_monthly, ugym_items = calculate_total(
+            'ugym', gym_access, gym_addons, is_student, is_pensioner, sessiondb
+        )
+        powerzone_monthly, powerzone_items = calculate_total(
+            'powerzone', gym_access, gym_addons, is_student, is_pensioner, sessiondb
+        )
+    finally:
+        sessiondb.close()
+ 
+    ugym_joining_fee = JOINING_FEES['ugym']
+    powerzone_joining_fee = JOINING_FEES['powerzone']
+    ugym_total = ugym_monthly + ugym_joining_fee
+    powerzone_total = powerzone_monthly + powerzone_joining_fee
+    cheaper_gym = 'ugym' if ugym_total <= powerzone_total else 'powerzone'
+ 
+    return render_template('pay_now.html',
+        ugym_items=ugym_items,
+        ugym_monthly=ugym_monthly,
+        ugym_joining_fee=ugym_joining_fee,
+        powerzone_items=powerzone_items,
+        powerzone_monthly=powerzone_monthly,
+        powerzone_joining_fee=powerzone_joining_fee,
+        cheaper_gym=cheaper_gym
+    )
 
 @app.route('/join_details', methods=['GET', 'POST'])
 def join_details():
     
     if 'join_gym_access' not in session or 'join_gym_addons' not in session:
         return redirect(url_for('join_now'))
+    
+    if 'join_gym_name' not in session:
+        return redirect(url_for('pay_now'))
     
     if request.method == 'POST':
         first_name = request.form.get('first_name').strip()
@@ -299,12 +359,19 @@ def join_details():
         if discount == 'student':
             is_student = True
             is_pensioner = False
+            is_other = False
         elif discount == 'pensioner':
             is_student = False
             is_pensioner = True
+            is_other = False
+        elif discount == 'other':
+            is_student = False
+            is_pensioner = False
+            is_other = True
         else:
             is_student = False
             is_pensioner = False
+            is_other = False
         
         if is_student and age >= 26:
             return render_template('join_details.html', error="You are not eligible for student discount.")
@@ -329,87 +396,51 @@ def join_details():
         session['join_dob'] = dob
         session['join_email'] = email
         session['join_password'] = password
+        session['join_is_other'] = is_other
 
-        return redirect(url_for('pay_now'))
-    
-    return render_template('join_details.html')
+        gym_name = session.get('join_gym_name')
+        gym_access = session.get('join_gym_access')
+        gym_addons = session.get('join_gym_addons', [])
 
+        sessiondb2 = SessionDB()
 
-@app.route('/pay_now', methods=['GET','POST'])
-def pay_now():
-
-    required_date = ['join_gym_access', 'join_gym_addons', 'join_first_name', 'join_email']
-
-    for val in required_date:
-        if val not in session:
-            return redirect(url_for('join_now)'))
-        
-    gym_access = session.get('join_gym_access')
-    gym_addons = session.get('join_gym_addons')
-    discount = session.get('join_discount')
-    is_student = True if discount == 'student' else False
-    is_pensioner = True if discount == 'pensioner' else False
-
-    if request.method == 'POST':
-
-        chosen_gym = request.form.get('chosen_gym')
-
-        if not chosen_gym:
-            return redirect(url_for('pay_now'))
-        
-        sessiondb = SessionDB()
         try:
-
-            total_monthly = calculate_monthly_total(chosen_gym, gym_access, gym_addons, is_student, is_pensioner, sessiondb)
-            joining_fee = JOINING_FEES[chosen_gym.lower()]
-
-            member_id = generate_unique_member_id(sessiondb)
+            total_monthly, _ = calculate_total(gym_name, gym_access, gym_addons, is_student, is_pensioner,sessiondb2)
+            joining_fee = JOINING_FEES[gym_name.lower()]
+            member_id = generate_unique_member_id(sessiondb2)
 
             new_member = Memberships(
                 membership_id = member_id,
-                first_name = session['join_first_name'],
-                last_name = session['join_last_name'],
-                dob = session['join_dob'],
-                email = session['join_email'],
-                password = session['join_password'],
-                gym_name = chosen_gym,
-                gym_access = gym_access,
-                gym_addons = ','.join(gym_addons) if gym_addons else None,
-                is_student = is_student,
-                is_pensioner = is_pensioner,
+                first_name    = first_name,
+                last_name     = last_name,
+                dob           = dob,
+                email         = email,
+                password      = password,
+                gym_name      = gym_name,
+                gym_access    = gym_access,
+                gym_addons    = ','.join(gym_addons) if gym_addons else None,
+                is_student    = is_student,
+                is_pensioner  = is_pensioner,
+                is_other      = is_other,
                 total_monthly = total_monthly,
-                joining_fee = joining_fee
+                total_due_now = joining_fee
             )
+            sessiondb2.add(new_member)
+            sessiondb2.commit()
 
-            sessiondb.add(new_member)
-            sessiondb.close()
-
-            for val in required_date:
+            for val in ['join_gym_access', 'join_gym_addons', 'join_discount',
+                        'join_gym_name', 'join_first_name', 'join_last_name',
+                        'join_dob', 'join_email', 'join_password']:
                 session.pop(val, None)
+            
+            session['new_member_id'] = member_id
+            return redirect(url_for('login'))
         
         finally:
-            sessiondb.close()
+            sessiondb2.close()
+    
+    return render_template('join_details.html')
 
-    sessiondb = SessionDB()
-    try:
-        
-        ugym_monthly, ugym_items = calculate_monthly_total('ugym', gym_access, gym_addons, is_student, is_pensioner, sessiondb)
-        powerzone_monthly, powerzone_items = calculate_monthly_total('powerzone', gym_access, gym_addons, is_student, is_pensioner, sessiondb)
-
-    finally:
-        sessiondb.close()
-
-    ugym_joining_fee = JOINING_FEES['ugym']
-    powerzone_joining_fee = JOINING_FEES['powerzone']
-
-    ugym_total = ugym_monthly + ugym_joining_fee
-    powerzone_total = powerzone_monthly + powerzone_joining_fee
-
-    cheaper_gym = 'ugym' if ugym_total < powerzone_total else 'powerzone'
-
-    return render_template('pay_now.html', ugym_items=ugym_items, ugym_monthly=ugym_monthly, ugym_joining_fee=ugym_joining_fee,
-                           powerzone_items=powerzone_items, powerzone_monthly=powerzone_monthly, powerzone_joining_fee=powerzone_joining_fee,
-                           cheaper_gym=cheaper_gym)
 
 # USER AUTHENTICATION ROUTES
 # ===========================================================================
@@ -459,7 +490,7 @@ def member_details():
     sessiondb = SessionDB()
     try:
         
-        member = sessiondb.query(Memberships).filter_by(Memberships.membership_id == session['logged_in_member_id']).first()
+        member = sessiondb.query(Memberships).filter(Memberships.membership_id == session['logged_in_member_id']).first()
 
         addons_list = member.gym_addons.split(',') if member.gym_addons else None
 

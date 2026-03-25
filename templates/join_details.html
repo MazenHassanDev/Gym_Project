@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Join Details{% endblock %}
+
+{% block content %}
+
+    <div id="joinSection">
+        <h1>YOUR DETAILS</h1>
+        <p class="join-text">Please fill in your personal details to complete your registration.</p>
+
+        <div id="formDiv">
+            <form action="{{ url_for('join_details') }}" method="post" id="joinForm">
+
+                <label for="first_name">First Name:</label>
+                <input type="text" id="first_name" name="first_name" required minlength="2" maxlength="80">
+
+                <label for="last_name">Last Name:</label>
+                <input type="text" id="last_name" name="last_name" required minlength="2" maxlength="80">
+
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required maxlength="200">
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required minlength="8" maxlength="200">
+
+                {% if error %}
+                    <p class="error">{{ error }}</p>
+                {% endif %}
+
+                <input type="submit" value="Pay Now">
+                
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

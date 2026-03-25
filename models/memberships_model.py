@@ -21,6 +21,7 @@ class Memberships(Base):
 
     is_student: Mapped[bool] = mapped_column(Boolean, default=False)
     is_pensioner: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_other: Mapped[bool] = mapped_column(Boolean, default=False)
 
     total_monthly: Mapped[float] = mapped_column(Numeric(10, 2), default=0.00)
     total_due_now: Mapped[float] = mapped_column(Numeric(10, 2), default=0.00)
