@@ -1,3 +1,5 @@
+# Memberships Model
+
 from sqlalchemy import Integer, String, Date, Boolean, Numeric
 from sqlalchemy.orm import Mapped, mapped_column
 from models.base_model import Base
