@@ -1,6 +1,4 @@
 import os
-import random
-import string
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
  
@@ -8,19 +6,24 @@ from flask import Flask, redirect, render_template, request, url_for, session
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
- 
+
+from utils.calculate_monthly_total import calculate_total, JOINING_FEES
+from utils.generate_member_id import generate_unique_member_id
+
+from config import *
+
 from models.base_model import Base
 from models.memberships_model import Memberships
 from models.membership_options_model import MembershipOption
 from models.admin_info_model import AdminInfo
 
 # ===========================================================================
-# 1) Load environment variables from .env
+# Load environment variables from .env
 # ===========================================================================
 load_dotenv()
 
 # ===========================================================================
-# 2) Flask app
+# Flask app
 # ===========================================================================
 app = Flask(__name__)
 
@@ -32,93 +35,12 @@ app.secret_key = FLASK_SECRET_KEY
 app.permanent_session_lifetime = timedelta(minutes=15)
 
 # ===========================================================================
-# 3) MySQL connection
+# MySQL connection
 # ===========================================================================
-
-DB_HOST = os.getenv('DB_HOST')
-DB_PORT = os.getenv('DB_PORT')
-DB_NAME = os.getenv('DB_NAME')
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-
-DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 engine = create_engine(DATABASE_URL)
 
 SessionDB = sessionmaker(bind=engine)
-
-
-# ===========================================================================
-# 4) Discounts & Joining Fees
-# ===========================================================================
-
-JOINING_FEES = {
-    'ugym': 10.00,
-    'powerzone': 30.00
-}
-
-DISCOUNT_RATES = {
-    'ugym': {
-        'student': 0.20,
-        'pensioner': 0.15
-    },
-    'powerzone': {
-        'student': 0.15,
-        'pensioner': 0.20
-    }
-}
-
-# ===========================================================================
-# 5) Generate Memebership ID
-# ===========================================================================
-
-def generate_unique_member_id(sessiondb):
-    while True:
-        new_id = "GYM-" + "".join(random.choices(string.digits, k=6))
-        exisiting_user = sessiondb.query(Memberships).filter_by(membership_id=new_id).first()
-        if not exisiting_user:
-            return new_id
-        
-# ===========================================================================
-# 6) Calculate Monthly Total
-# ===========================================================================
-
-def calculate_total(gym_name, gym_access, gym_addons, is_student, is_pensioner, sessiondb):
-
-    total = 0.00
-    user_items = []
-
-    discount_type = 'student' if is_student else ('pensioner' if is_pensioner else None)
-    discount_rate = DISCOUNT_RATES[gym_name.lower()].get(discount_type, 0) if discount_type else 0
-
-    has_gym_access = gym_access is not None
-
-    if gym_access:
-        option = sessiondb.query(MembershipOption).filter_by(gym_name=gym_name.lower(), option_code=gym_access).first()
-
-        if option:
-            price = float(option.price_without_gym)
-            
-            if option.discountable and discount_rate:
-                price = round(price * (1 - discount_rate), 2)
-
-            total += price
-            user_items.append({'display_name': option.display_name, 'price': price})
-
-    for addon_code in gym_addons:
-        option = sessiondb.query(MembershipOption).filter_by(gym_name=gym_name.lower(), option_code=addon_code).first()
-
-        if option:
-            price = float(option.price_with_gym) if has_gym_access else float(option.price_without_gym)
-
-            if option.discountable and discount_rate:
-                price = round(price * (1 - discount_rate), 2)
-
-            total += price
-            user_items.append({'display_name': option.display_name, 'price': price})
-
-    return round(total, 2), user_items
-
 
 # ===========================================================================
 # ADMIN ROUTES
