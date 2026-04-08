@@ -1,4 +1,3 @@
-{# ===========================================================================#}
 {# JOIN NOW PAGE HTML (POST)#}
 {# ===========================================================================#}
 
@@ -15,9 +14,14 @@
             <form action="{{ url_for('join_now') }}" method="post" id="joinForm">
 
                 <!-- SECTION 1: GYM ACCESS TIME -->
-
                 <label class="section-label">Gym Access Time:</label>
                 <div class="option-group">
+                    <label class="option-box">
+                        <input type="radio" name="gym_access" value="" checked>
+                        <span class="option-title">No Gym Access</span>
+                        <span class="option-desc">Choose only add-ons if you want</span>
+                    </label>
+
                     <label class="option-box">
                         <input type="radio" name="gym_access" value="SUPER_OFFPEAK">
                         <span class="option-title">Super Off-Peak</span>
@@ -35,17 +39,9 @@
                         <span class="option-title">Anytime</span>
                         <span class="option-desc">Full access at any time</span>
                     </label>
-
-                    <label class="option-box">
-                        <input type="radio" name="gym_access" value="">
-                        <span class="option-title">None</span>
-                        <span class="option-desc">Don't need gym access</span>
-                    </label>
-
                 </div>
 
                 <!-- SECTION 2: FITNESS ACTIVITIES (ADD-ONS) -->
-
                 <label class="section-label">Fitness Activities:</label>
                 <div class="option-group">
                     <label class="option-box">
@@ -53,6 +49,7 @@
                         <span class="option-title">Swimming</span>
                         <span class="option-desc">Access to swimming pool</span>
                     </label>
+
                     <label class="option-box">
                         <input type="checkbox" name="gym_addons" value="CLASSES">
                         <span class="option-title">Classes</span>
@@ -61,14 +58,14 @@
                 </div>
 
                 <!-- SECTION 3: RECOVERY SESSIONS (ADD-ONS) -->
-
-                <label for="section-label">Recovery Sessions:</label>
+                <label class="section-label">Recovery Sessions:</label>
                 <div class="option-group">
                     <label class="option-box">
                         <input type="checkbox" name="gym_addons" value="MASSAGE">
                         <span class="option-title">Massage</span>
                         <span class="option-desc">Massage sessions</span>
                     </label>
+
                     <label class="option-box">
                         <input type="checkbox" name="gym_addons" value="PHYSIO">
                         <span class="option-title">Physiotherapy</span>
@@ -76,18 +73,19 @@
                     </label>
                 </div>
 
-                <!-- SECTION 4: STATUS (OPTIONAL) -->
-
+                <!-- SECTION 4: STATUS -->
                 <label class="section-label">Status:</label>
                 <div class="radio-group">
                     <label class="radio-option">
                         <input type="radio" name="typeOf" value="student" required>
                         Student
                     </label>
+
                     <label class="radio-option">
                         <input type="radio" name="typeOf" value="pensioner">
                         Pensioner
                     </label>
+
                     <label class="radio-option">
                         <input type="radio" name="typeOf" value="other">
                         Other

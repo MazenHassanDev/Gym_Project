@@ -1,24 +1,30 @@
 {# ===========================================================================#}
-{# HOME PAGE HTML#}
+{# HOME PAGE HTML #}
 {# ===========================================================================#}
 
 {% extends 'base.html' %}
 {% block title %}Home{% endblock title %}
 
 {% block content %}
-<div id="homeSection">
-    <h1>Welcome to Our Gyms</h1>
-    <p class="motto">"Train smarter. Get stronger. Stay consistent."</p>
+<section id="homeSection" class="home-section">
+    <div class="home-overlay">
+        <div class="home-content">
+            <h1 class="home-title">Welcome to Our Gyms</h1>
+            <p class="motto">Train smarter. Get stronger. Stay consistent.</p>
 
-    <p class="home-desc">
-        Whether you're just starting out or pushing your limits, we offer the perfect environment
-        to help you achieve your fitness goals. Explore our gyms, compare memberships, and join today.
-    </p>
+            <p class="home-desc">
+                Whether you're just starting out or pushing your limits, we provide the right environment
+                to help you reach your fitness goals. Explore our gyms, compare memberships, and join today.
+            </p>
 
-    <div id="gymLinks">
-        <a href="{{ url_for('ugym') }}" class="gymCard">UGym</a>
-        <a href="{{ url_for('powerzone') }}" class="gymCard">PowerZone</a>
-        <a href="{{ url_for('join_now') }}" class="gymCard joinNow">Join Now</a>
-    </div>
-</div>
+            <div id="gymLinks" class="gym-links">
+                <a href="{{ url_for('ugym') }}" class="gymCard">UGym</a>
+                <a href="{{ url_for('powerzone') }}" class="gymCard">PowerZone</a>
+                <a href="{{ url_for('join_now') }}" class="gymCard joinNow">Join Now</a>
+            </div>
+                <div class="home-bottom-image">
+            <img src="{{ url_for('static', filename='gympic.avif') }}" alt="Gym image">
+        </div>
+  
+</section>
 {% endblock %}
